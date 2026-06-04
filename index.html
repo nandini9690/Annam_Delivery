@@ -1,0 +1,441 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Annam Delivery-Food, groceries & stationery — delivered by students, for student</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="Style.css.css"/>
+
+  <style>
+    /* ROOT OVERRIDES — Neon Light Purple Theme */
+    :root {
+      --bg0: #090514;
+      --bg1: #120b24;
+      --card: rgba(30, 16, 54, 0.75);
+      --card2: rgba(45, 24, 82, 0.9);
+      --stroke: rgba(168, 85, 247, 0.3);
+      --text: #f3eefc;
+      --muted: rgba(243, 238, 252, 0.6);
+      --accent: #a855f7;
+      --accent2: #c084fc;
+      --good: #2ee59d;
+      --warn: #ffcc66;
+      --bad: #ff5c7a;
+      --neon-shadow: 0 0 15px rgba(168, 85, 247, 0.6), 0 0 30px rgba(168, 85, 247, 0.3);
+      --radius: 18px;
+      --radius2: 14px;
+    }
+
+    body {
+      background-color: var(--bg0);
+      background-image: radial-gradient(circle at 50% 0%, #251249 0%, var(--bg0) 75%);
+      color: var(--text);
+      overflow-x: hidden;
+    }
+
+    .hero-title span { color: var(--accent); text-shadow: 0 0 10px rgba(168, 85, 247, 0.5); }
+    .btn-primary { background: linear-gradient(135deg, var(--accent), #7c3aed); box-shadow: var(--neon-shadow); }
+    .btn-primary:hover { box-shadow: 0 0 25px rgba(168, 85, 247, 0.9); transform: translateY(-2px); }
+
+    #canvas-container { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 1; pointer-events: none; display: none; }
+    #dotsCanvas { width: 100%; height: 100%; display: block; }
+
+    /* AUTH & DASHBOARDS */
+    #view-neon-auth { position: relative; z-index: 10; display: none; min-height: 100vh; align-items: center; justify-content: center; padding: 40px 20px; }
+    .auth-neon-card { background: var(--card2); border: 2px solid var(--accent); box-shadow: var(--neon-shadow); border-radius: var(--radius); padding: 40px; width: 100%; max-width: 460px; backdrop-filter: blur(12px); transition: all 0.3s ease; }
+    .neon-input { width: 100%; background: rgba(15, 7, 32, 0.8); border: 1px solid var(--stroke); padding: 14px 18px; border-radius: var(--radius2); color: #fff; font-size: 15px; margin-bottom: 20px; outline: none; transition: all 0.3s; }
+    .neon-input:focus { border-color: var(--accent); box-shadow: 0 0 10px rgba(168, 85, 247, 0.5); }
+    
+    /* FLOATING FOOD ANIMATIONS */
+    .hero-floating-container { position: relative; width: 100%; height: 250px; margin: 40px 0; display: flex; justify-content: center; align-items: center; }
+    .float-item { position: absolute; border-radius: 50%; object-fit: cover; border: 3px solid var(--accent); box-shadow: var(--neon-shadow); animation: floatAnim 6s ease-in-out infinite; z-index: 2; }
+    .f1 { width: 120px; height: 120px; left: 15%; top: 20px; animation-delay: 0s; }
+    .f2 { width: 90px; height: 90px; left: 30%; top: 120px; animation-delay: 1.5s; }
+    .f3 { width: 140px; height: 140px; right: 15%; top: 10px; animation-delay: 0.7s; }
+    .f4 { width: 100px; height: 100px; right: 35%; top: 100px; animation-delay: 2.2s; }
+    @keyframes floatAnim { 0%, 100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-20px) rotate(10deg); } }
+
+    /* QUOTE & TEAM SECTIONS */
+    .quote-section { background: rgba(168, 85, 247, 0.05); border-top: 1px solid var(--stroke); border-bottom: 1px solid var(--stroke); padding: 60px 20px; text-align: center; margin: 60px 0; }
+    .quote-text { font-family: 'Playfair Display', serif; font-size: 32px; font-style: italic; max-width: 800px; margin: 0 auto; color: var(--text); line-height: 1.4; }
+    .quote-author { display: block; margin-top: 20px; color: var(--accent2); font-weight: 600; letter-spacing: 1px; text-transform: uppercase; font-size: 14px; }
+    
+    .team-card { background: var(--card); border: 1px solid var(--stroke); padding: 30px; border-radius: var(--radius); text-align: center; transition: 0.3s; }
+    .team-card:hover { border-color: var(--accent); transform: translateY(-5px); box-shadow: var(--neon-shadow); }
+    .team-avatar { width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg, var(--accent), #7c3aed); display: inline-flex; align-items: center; justify-content: center; font-size: 32px; margin-bottom: 15px; color: #fff; box-shadow: 0 0 15px rgba(168,85,247,0.4); }
+
+    /* VENDOR DASHBOARD TABLES */
+    .vendor-table { width: 100%; border-collapse: collapse; margin-top: 20px; text-align: left; }
+    .vendor-table th { border-bottom: 2px solid var(--stroke); padding: 12px; color: var(--accent2); font-weight: 600; }
+    .vendor-table td { border-bottom: 1px solid rgba(255,255,255,0.05); padding: 15px 12px; }
+
+    /* MISC UI */
+    .delivery-badge { display: inline-flex; align-items: center; gap: 8px; background: rgba(46, 229, 157, 0.15); border: 1px solid var(--good); color: var(--good); padding: 10px 20px; border-radius: 30px; font-weight: 700; font-size: 15px; margin-bottom: 20px; box-shadow: 0 0 15px rgba(46, 229, 157, 0.2); }
+    .neon-logo-container { display: flex; align-items: center; gap: 12px; }
+    .neon-logo-circle { width: 42px; height: 42px; border-radius: 50%; background: linear-gradient(135deg, var(--accent), #7c3aed); box-shadow: var(--neon-shadow); display: flex; align-items: center; justify-content: center; font-weight: 900; color: #fff; font-family: 'Playfair Display', serif; font-size: 20px; }
+    .neon-logo-text { font-family: 'Playfair Display', serif; font-weight: 900; font-size: 24px; letter-spacing: -0.5px; background: linear-gradient(to right, #fff, var(--accent2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    
+    #view-buyer-dashboard, #view-buyer-shops, #view-buyer-menu, #view-checkout-panel, #view-role-selection { display: none; padding: 120px 20px 60px; max-width: 1200px; margin: 0 auto; }
+    .category-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; margin-top: 40px; }
+    .category-neon-card { background: linear-gradient(145deg, var(--card), rgba(20, 10, 40, 0.9)); border: 1px solid var(--stroke); border-radius: var(--radius); padding: 50px 30px; text-align: center; cursor: pointer; transition: all 0.4s; }
+    .category-neon-card:hover { transform: translateY(-8px); border-color: var(--accent); box-shadow: var(--neon-shadow); }
+    
+    .shop-neon-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 25px; margin-top: 30px; }
+    .shop-neon-card { background: var(--card); border: 1px solid var(--stroke); border-radius: var(--radius2); overflow: hidden; cursor: pointer; transition: all 0.3s; }
+    .shop-neon-card:hover { border-color: var(--accent); box-shadow: 0 0 15px rgba(168, 85, 247, 0.4); transform: scale(1.02); }
+    .shop-img-wrapper { height: 180px; position: relative; }
+    .shop-img-wrapper img { width: 100%; height: 100%; object-fit: cover; }
+    
+    .menu-neon-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 25px; }
+    .menu-neon-item { background: var(--card); border: 1px solid var(--stroke); border-radius: var(--radius2); overflow: hidden; display: flex; flex-direction: column; transition: all 0.3s; }
+    .menu-neon-item:hover { border-color: var(--accent); box-shadow: 0 0 15px rgba(168, 85, 247, 0.3); }
+    .menu-item-img { height: 160px; width: 100%; object-fit: cover; }
+    .menu-item-body { padding: 16px; display: flex; flex-direction: column; flex-grow: 1; }
+
+    #floating-cart-trigger { position: fixed; bottom: 30px; right: 30px; background: linear-gradient(135deg, var(--accent), #7c3aed); color: #fff; padding: 16px 24px; border-radius: 50px; box-shadow: var(--neon-shadow); z-index: 99; cursor: pointer; font-weight: 600; display: none; align-items: center; gap: 10px; transition: 0.2s; }
+    #floating-cart-trigger:hover { transform: scale(1.05); }
+  </style>
+</head>
+<body>
+
+  <div id="canvas-container">
+    <canvas id="dotsCanvas"></canvas>
+  </div>
+
+  <header class="topbar">
+    <div class="row between align-center" style="width:100%; max-width:1200px; margin:0 auto;">
+      <div class="neon-logo-container" style="cursor: pointer;" onclick="window.location.reload();">
+        <div class="neon-logo-circle">A</div>
+        <div class="neon-logo-text">Annam Delivery </div>
+      </div>
+      <div class="row gap-12 align-center">
+        <button id="btn-global-orders" class="btn hidden" style="border-color: var(--stroke); color: var(--text);">My Orders</button>
+        <button id="btn-global-logout" class="btn hidden" style="background: rgba(255,92,122,0.15); color: var(--bad); border-color: rgba(255,92,122,0.3);">Disconnect</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- LANDING PAGE (Extended) -->
+  <div id="view-landing-start">
+    <div class="app-shell" style="padding-bottom: 0;">
+      <section class="hero text-center" style="position: relative; z-index: 2;">
+        <div class="delivery-badge">
+          ⚡ Lightning Fast 15-Minute Campus Delivery
+        </div>
+        <h1 class="hero-title" style="font-size: 64px;">Annam Delivery-delivered by students, for student</h1>
+        <p class="hero-subtitle" style="max-width: 600px; margin: 16px auto 30px; font-size: 20px;">
+          Experience seamless fast-food and grocery fulfillment engineered exclusively for students and campus life.
+        </p>
+        
+        <button class="btn btn-primary" style="padding: 18px 40px; font-size: 18px; border-radius: 30px;" onclick="showOnly('auth')">
+          Log In to Portal 🚀
+        </button>
+
+        <!-- Floating Food Animations -->
+        <div class="hero-floating-container">
+          <img src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=400&auto=format&fit=crop&q=60" class="float-item f1" alt="Burger">
+          <img src="https://images.unsplash.com/photo-1513104890138-7c749659a591?w=400&auto=format&fit=crop&q=60" class="float-item f2" alt="Pizza">
+          <img src="https://images.unsplash.com/photo-1555507036-ab1f4038808a?w=400&auto=format&fit=crop&q=60" class="float-item f3" alt="Croissant">
+          <img src="https://images.unsplash.com/photo-1600271886742-f049cd451bba?w=400&auto=format&fit=crop&q=60" class="float-item f4" alt="Drink">
+        </div>
+      </section>
+    </div>
+
+    <section class="quote-section">
+      <p class="quote-text">"Fueling late-night hackathons and early morning lectures. Great food and essential supplies, delivered straight to your hostel door in minutes."</p>
+      <span class="quote-author">— The Campus Lifeline</span>
+    </section>
+
+    <div class="app-shell" style="padding-top: 0;">
+      <section style="margin-bottom: 80px;">
+        <div class="text-center" style="margin-bottom:40px;">
+          <span class="badge" style="background: rgba(168,85,247,0.15); color: var(--accent2); border-color: var(--stroke);">Sneak Peek</span>
+          <h2 style="margin:12px 0 0; font-family:'Playfair Display', serif; font-size:36px;">Trending on Campus</h2>
+        </div>
+        <div class="shop-neon-grid">
+          <!-- Teaser Menu Items -->
+          <div class="menu-neon-item" style="pointer-events: none;">
+            <img src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=400&auto=format&fit=crop&q=60" class="menu-item-img">
+            <div class="menu-item-body"><h4 style="margin:0;">Cheese Burst Burger</h4><div class="menu-item-price">₹90</div></div>
+          </div>
+          <div class="menu-neon-item" style="pointer-events: none;">
+            <img src="https://images.unsplash.com/photo-1615478503562-ec2d8aa0e24e?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTh8fGp1aWNlfGVufDB8fDB8fHww" class="menu-item-img">
+            <div class="menu-item-body"><h4 style="margin:0;">Energizing Drinks</h4><div class="menu-item-price">₹60</div></div>
+          </div>
+          <div class="menu-neon-item" style="pointer-events: none;">
+            <img src="https://images.unsplash.com/photo-1612927601601-6638404737ce?w=400&auto=format&fit=crop&q=60" class="menu-item-img">
+            <div class="menu-item-body"><h4 style="margin:0;">Midnight Maggi Pack</h4><div class="menu-item-price">₹60</div></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="team-section">
+        <div class="text-center" style="margin-bottom:40px;">
+          <span class="badge" style="background: rgba(46, 229, 157, 0.15); color: var(--good); border-color: rgba(46,229,157,0.3);">Hackathon 2026</span>
+          <h2 style="margin:12px 0 0; font-family:'Playfair Display', serif; font-size:36px;">Meet the Developers</h2>
+          <p class="muted" style="margin-top: 10px;">The brilliant minds powering the Annam Delivery Matrix.</p>
+        </div>
+        
+        <div class="dev-grid" style="grid-template-columns: repeat(4, 1fr);">
+          <div class="team-card">
+            <div class="team-avatar">N</div>
+            <h3 style="font-size: 18px; margin:0;">Nandani Chauhan</h3>
+            <p class="muted" style="font-size: 13px; margin:5px 0 0;">System Architect</p>
+          </div>
+          <div class="team-card">
+            <div class="team-avatar">S</div>
+            <h3 style="font-size: 18px; margin:0;">Sara Nawaz</h3>
+            <p class="muted" style="font-size: 13px; margin:5px 0 0;">UI/UX Engineer</p>
+          </div>
+          <div class="team-card">
+            <div class="team-avatar">O</div>
+            <h3 style="font-size: 18px; margin:0;">Om Walia</h3>
+            <p class="muted" style="font-size: 13px; margin:5px 0 0;">Backend Lead</p>
+          </div>
+          <div class="team-card">
+            <div class="team-avatar">S</div>
+            <h3 style="font-size: 18px; margin:0;">Shubhangi Saini</h3>
+            <p class="muted" style="font-size: 13px; margin:5px 0 0;">Database Manager</p>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <!-- UNIVERSAL LOGIN PANEL -->
+  <div id="view-neon-auth">
+    <div class="auth-neon-card">
+      <div class="text-center" style="margin-bottom: 30px;">
+        <div class="neon-logo-circle" style="margin: 0 auto 15px; width: 60px; height: 60px; font-size: 28px;">A</div>
+        <h2 id="auth-title-injection" style="font-family: 'Playfair Display', serif; font-size: 28px; margin: 0;">Universal Node Access</h2>
+        <p class="meta" style="margin-top: 5px;">Secure Verification Pipeline</p>
+      </div>
+
+      <div id="otp-alert-banner" style="display:none; background:rgba(46,229,157,0.15); border:1px solid var(--good); padding:12px; border-radius:var(--radius2); color:var(--good); font-size:14px; margin-bottom:20px; text-align:center;">
+        ⚡ A verification OTP token has been dispatched to your email!
+      </div>
+
+      <label style="display:block; font-size:13px; font-weight:600; margin-bottom:8px; color:var(--accent2)">CAMPUS EMAIL ADDRESS</label>
+      <input type="email" id="neon-auth-email" class="neon-input" placeholder="name@campus.edu" value="student@campus.edu">
+
+      <div class="row gap-12" style="margin-bottom: 20px;">
+        <button id="btn-dispatch-otp" class="btn" style="flex:1; background:transparent; border:1px solid var(--accent); color:var(--text)">Request OTP</button>
+        <input type="text" id="neon-auth-otp" class="neon-input" placeholder="Enter OTP Token" style="flex:1; margin-bottom:0;" disabled value="123456">
+      </div>
+
+      <label style="display:block; font-size:13px; font-weight:600; margin-bottom:8px; color:var(--accent2)">ACCESS PASSWORD</label>
+      <input type="password" id="neon-auth-password" class="neon-input" placeholder="••••••••" value="securenode123">
+
+      <button id="btn-submit-neon-auth" class="btn btn-primary" style="width:100%; padding:14px; font-size:16px; font-weight:600;">Authenticate Identity</button>
+      
+      <button class="btn" style="width:100%; margin-top:12px; background:transparent; border:none; color:var(--muted); font-size:13px;" onclick="returnToStartPage()">← Return to Home</button>
+    </div>
+  </div>
+
+  <!-- ROLE SELECTION (Appears after Login) -->
+  <div id="view-role-selection">
+    <div class="text-center" style="margin-bottom:40px;">
+      <span class="badge" style="background: rgba(168,85,247,0.15); color: var(--accent2); border-color: var(--stroke);">Authenticated</span>
+      <h2 style="margin:12px 0 0; font-family:'Playfair Display', serif; font-size:36px;">Select Your Workspace</h2>
+    </div>
+
+    <div class="dev-grid">
+      <div class="dev-card" style="cursor:pointer;" onclick="handleRoleCardSelection('buyer')">
+        <div class="row between align-center">
+          <div class="dev-icon" style="background: rgba(168,85,247,0.15); color: var(--accent2);">🛍️</div>
+          <span class="badge success">Active</span>
+        </div>
+        <h3>Buyer Hub</h3>
+        <p>Order delicious dishes from top food stalls or request essential grocery-stationery baskets.</p>
+        <div class="meta" style="margin-top:auto; color: var(--accent2); font-weight:600;">Initialize Terminal →</div>
+      </div>
+
+      <div class="dev-card" style="cursor:pointer;" onclick="handleRoleCardSelection('fastfoodVendor')">
+        <div class="row between align-center">
+          <div class="dev-icon" style="background: #1a153a; color: #ffcc66;">🍔</div>
+          <span class="badge warning">Partner Portal</span>
+        </div>
+        <h3>FastFood Kitchen Node</h3>
+        <p>Configure menu listings, control item pricing, and dispatch status logs to local runners.</p>
+        <div class="meta" style="margin-top:auto; color: var(--warn); font-weight:600;">Initialize Terminal →</div>
+      </div>
+
+      <div class="dev-card" style="cursor:pointer;" onclick="handleRoleCardSelection('groceryVendor')">
+        <div class="row between align-center">
+          <div class="dev-icon" style="background: #1a153a; color: #2ee59d;">📝</div>
+          <span class="badge success">Merchant Portal</span>
+        </div>
+        <h3>Grocery Hub</h3>
+        <p>Maintain catalogs of study aids, notebooks, and critical food staples for immediate dispatch.</p>
+        <div class="meta" style="margin-top:auto; color: var(--good); font-weight:600;">Initialize Terminal →</div>
+      </div>
+
+      <div class="dev-card" style="cursor:pointer;" onclick="handleRoleCardSelection('deliveryPerson')">
+        <div class="row between align-center">
+          <div class="dev-icon" style="background: #1a153a; color: #ff5c7a;">🚴</div>
+          <span class="badge danger">Runner Node</span>
+        </div>
+        <h3>Delivery Fleet Node</h3>
+        <p>Claim active pipeline orders, reference campus map coordinates, and process drop-off tasks.</p>
+        <div class="meta" style="margin-top:auto; color: var(--bad); font-weight:600;">Initialize Terminal →</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BUYER SCREENS -->
+  <div id="view-buyer-dashboard">
+    <div style="margin-bottom: 40px;">
+      <h1 style="font-family: 'Playfair Display', serif; font-size: 38px; margin: 0;">Welcome back, Explorer</h1>
+      <p class="meta">Select a specialized procurement line below to view active campus shops.</p>
+    </div>
+    <div class="category-grid">
+      <div class="category-neon-card" onclick="routeBuyerCategory('food')">
+        <div class="category-icon">✨ 🍔</div>
+        <h2 style="font-family: 'Playfair Display', serif; font-size: 26px; margin: 0 0 10px;">Gourmet Food Pipeline</h2>
+        <p class="meta">Access premium campus kitchen outlets offering cooked meals and drinks.</p>
+        <div style="margin-top: 20px; color: var(--accent); font-weight: 700;">Open Catalog View →</div>
+      </div>
+      <div class="category-neon-card" onclick="routeBuyerCategory('grocery')">
+        <div class="category-icon">⚡ 📝</div>
+        <h2 style="font-family: 'Playfair Display', serif; font-size: 26px; margin: 0 0 10px;">Grocery & Stationery</h2>
+        <p class="meta">Stock up on exam notebooks, writing tools, and emergency snacks.</p>
+        <div style="margin-top: 20px; color: var(--accent); font-weight: 700;">Open Catalog View →</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="view-buyer-shops">
+    <div class="row between align-center" style="margin-bottom: 30px;">
+      <div>
+        <button class="btn" style="background:transparent; border-color:var(--stroke); margin-bottom:10px;" onclick="showOnly('buyer-dashboard')">← Categories</button>
+        <h1 id="shop-list-title-injection" style="font-family: 'Playfair Display', serif; font-size: 32px; margin: 0;">Active Campus Outlets</h1>
+      </div>
+    </div>
+    <div id="shop-cards-container" class="shop-neon-grid"></div>
+  </div>
+
+  <div id="view-buyer-menu">
+    <button class="btn" style="background:transparent; border-color:var(--stroke); margin-bottom:20px;" onclick="returnToShopListing()">← Return to Outlets</button>
+    <div id="menu-header-injection"></div>
+    <h2 style="font-family: 'Playfair Display', serif; margin-bottom: 20px;">Available Stock Elements</h2>
+    <div id="menu-items-container" class="menu-neon-grid"></div>
+  </div>
+
+  <div id="view-checkout-panel">
+    <button class="btn" style="background:transparent; border-color:var(--stroke); margin-bottom:20px;" onclick="returnToActiveMenu()">← Continue Adding Items</button>
+    <h1 style="font-family: 'Playfair Display', serif; font-size: 32px; margin: 0 0 30px;">Secure Pipeline Settlement</h1>
+    <div class="checkout-layout-split" style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
+      <div class="checkout-card-panel" style="background: var(--card); border: 1px solid var(--stroke); padding: 30px; border-radius: var(--radius);">
+        <h3 style="margin-top:0; margin-bottom:20px; font-family:'Playfair Display', serif; font-size:22px;">1. Destination Coordinates</h3>
+        
+        <div style="width: 100%; height: 240px; background: #140d2b; border: 1px dashed var(--accent); border-radius: var(--radius2); margin-bottom: 20px; display: flex; align-items: center; justify-content: center; position: relative;">
+          <div style="position: absolute; width: 100px; height: 100px; border: 2px solid var(--accent); border-radius: 50%; opacity: 0.4;"></div>
+          <div style="z-index: 2; text-align: center;">
+            <strong style="color:#fff; display:block; margin-bottom:6px;">Google Maps Interface</strong>
+            <span id="map-status-text" class="badge warning">Awaiting Satellite Ping...</span>
+          </div>
+        </div>
+
+        <div class="row gap-12" style="margin-bottom: 25px;">
+          <button id="btn-map-geolocate" class="btn btn-primary" style="flex: 1;">📍 Ping Location</button>
+          <button id="btn-clear-address" class="btn" style="background:transparent; border-color:var(--stroke)">Clear</button>
+        </div>
+        <label style="display:block; font-size:13px; font-weight:600; margin-bottom:8px; color:var(--accent2)">ROOM ADDRESS</label>
+        <textarea id="checkout-manual-address" class="neon-input" rows="3" placeholder="Hostel Block, Floor Level, Room..." style="resize:none; font-family:var(--sans);"></textarea>
+      </div>
+
+      <div class="checkout-card-panel" style="background: var(--card2); border: 1px solid var(--accent); padding: 30px; border-radius: var(--radius);">
+        <h3 style="margin-top:0; margin-bottom:20px; font-family:'Playfair Display', serif; font-size:22px;">2. Basket Summary</h3>
+        <div id="checkout-basket-items-list" style="display:flex; flex-direction:column; gap:15px; margin-bottom:25px;"></div>
+        
+        <div style="border-top: 1px solid var(--stroke); padding-top: 20px;">
+          <div class="row between" style="margin-bottom: 10px;"><span class="muted">Subtotal</span><span id="checkout-summary-subtotal" style="font-weight:600;">₹0</span></div>
+          <div class="row between" style="margin-bottom: 15px;"><span class="muted">Campus Runner Fee</span><span style="font-weight:600; color:var(--good)">₹15</span></div>
+          <div class="row between" style="font-size: 20px; font-weight: 700; border-top: 1px dashed var(--stroke); padding-top:15px;"><span>Total Cost</span><span id="checkout-summary-total" style="color:var(--accent2)">₹0</span></div>
+        </div>
+        <button id="btn-submit-final-order" class="btn btn-primary" style="width:100%; padding:16px; margin-top:25px; font-size:16px; font-weight:700;">Transmit Order Payload</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="floating-cart-trigger" onclick="routeToCheckoutPanel()">
+    <span>🛒</span><span>Review Basket</span><span id="floating-cart-count-badge" style="background:#fff; color:var(--accent); padding:2px 8px; border-radius:10px; font-size:12px; font-weight:700;">0</span>
+  </div>
+
+  <!-- EXPANDED VENDOR DASHBOARDS -->
+  <div id="view-fastfoodVendor" class="app-shell" style="display:none; padding:120px 20px;">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:30px;">
+      <h2 style="font-family:'Playfair Display', serif; font-size: 32px; margin:0;">FastFood Kitchen Node</h2>
+      <button class="btn btn-primary" onclick="showOnly('role-selection')">Switch Node</button>
+    </div>
+    
+    <div class="checkout-layout-split" style="display: grid; grid-template-columns: 2fr 1fr; gap: 30px;">
+      <div class="checkout-card-panel">
+        <h3 style="color: var(--accent2);">Live Order Pipeline</h3>
+        <table class="vendor-table">
+          <thead><tr><th>Order ID</th><th>Items</th><th>Total</th><th>Status</th><th>Action</th></tr></thead>
+          <tbody>
+            <tr><td>#ORD-901</td><td>2x Cheese Burger, 1x Coke</td><td>₹220</td><td><span class="badge warning">Preparing</span></td><td><button class="btn btn-primary" style="padding:6px 12px;">Dispatch</button></td></tr>
+            <tr><td>#ORD-902</td><td>1x Pizza Slice, 2x Fries</td><td>₹260</td><td><span class="badge success">Ready</span></td><td><button class="btn" style="padding:6px 12px; border-color:var(--stroke);">Assigned</button></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="checkout-card-panel" style="background: var(--card2);">
+        <h3 style="color: var(--accent2);">Quick Stats</h3>
+        <div style="margin-top:20px;">
+          <p class="muted" style="margin-bottom:5px;">Today's Revenue</p>
+          <h2 style="margin:0; font-size: 36px;">₹4,250</h2>
+          <hr style="border:0; border-top:1px solid var(--stroke); margin: 20px 0;">
+          <p class="muted" style="margin-bottom:5px;">Pending Orders</p>
+          <h2 style="margin:0; font-size: 36px; color: var(--warn);">8</h2>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="view-groceryVendor" class="app-shell" style="display:none; padding:120px 20px;">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:30px;">
+      <h2 style="font-family:'Playfair Display', serif; font-size: 32px; margin:0;">Grocery Merchant Node</h2>
+      <button class="btn btn-primary" onclick="showOnly('role-selection')">Switch Node</button>
+    </div>
+    
+    <div class="checkout-layout-split" style="display: grid; grid-template-columns: 2fr 1fr; gap: 30px;">
+      <div class="checkout-card-panel">
+        <h3 style="color: var(--accent2);">Inventory Alerts</h3>
+        <table class="vendor-table">
+          <thead><tr><th>Item Name</th><th>Stock Left</th><th>Category</th><th>Action</th></tr></thead>
+          <tbody>
+            <tr><td>A4 Long Notebook</td><td><span class="badge danger">4 units</span></td><td>Stationery</td><td><button class="btn btn-primary" style="padding:6px 12px;">Restock</button></td></tr>
+            <tr><td>Maggi Noodles Pack</td><td><span class="badge warning">12 units</span></td><td>Snacks</td><td><button class="btn" style="padding:6px 12px; border-color:var(--stroke);">Restock</button></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="checkout-card-panel" style="background: var(--card2);">
+        <h3 style="color: var(--accent2);">Quick Stats</h3>
+        <div style="margin-top:20px;">
+          <p class="muted" style="margin-bottom:5px;">Today's Sales</p>
+          <h2 style="margin:0; font-size: 36px;">₹1,890</h2>
+          <hr style="border:0; border-top:1px solid var(--stroke); margin: 20px 0;">
+          <p class="muted" style="margin-bottom:5px;">Low Stock Items</p>
+          <h2 style="margin:0; font-size: 36px; color: var(--bad);">14</h2>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="view-deliveryPerson" class="app-shell" style="display:none; padding:120px 20px;">
+    <div class="checkout-card-panel" style="max-width:600px; margin:0 auto; text-align:center;">
+      <h2 style="font-family:'Playfair Display', serif;">Fleet Runner Interface</h2>
+      <p class="muted">Awaiting active distribution payloads from local kitchens.</p>
+      <button class="btn btn-primary" onclick="showOnly('role-selection')">Switch Node</button>
+    </div>
+  </div>
+
+  <script src="data.js"></script>
+  <script src="supabase-config.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
